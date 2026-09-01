@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 216 68% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 216 68% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 68% 12%;
+    --primary: 212 68% 29%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 60% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 39 60% 96%;
+    --muted-foreground: 216 20% 40%;
+    --accent: 30 63% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 20% 88%;
+    --input: 216 20% 88%;
+    --ring: 212 68% 29%;
+    --radius: 0.5rem;
+  }
+
+  * { @apply border-border; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    @apply bg-white text-brand-ink antialiased;
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  ::selection { background: #17457B; color: #ffffff; }
+
+  /* Fraunces serif for every heading globally. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+    letter-spacing: -0.015em;
+    font-feature-settings: 'ss01';
+  }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d5dce6; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #17457B; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  /* Numeric / tabular fields (statistics, tables) stay in Inter, tabular-nums. */
+  .font-numeric {
+    font-family: var(--font-sans), 'Inter', sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+}
