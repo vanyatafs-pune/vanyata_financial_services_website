@@ -1,5 +1,6 @@
+
 'use client'
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { SERVICES } from '@/data/services'
@@ -7,9 +8,30 @@ import Container from '@/components/shared/Container'
 import BrandButton from '@/components/shared/BrandButton'
 import Link from 'next/link'
 
+
+const DESKTOP_QUERY = '(min-width: 1024px)'
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    const mql = window.matchMedia(DESKTOP_QUERY)
+    const update = () => setIsDesktop(mql.matches)
+    update()
+    mql.addEventListener('change', update)
+    return () => mql.removeEventListener('change', update)
+  }, [])
+
+  return isDesktop
+}
+
 export default function Hero() {
   const wrapRef = useRef(null)
   const reduce = useReducedMotion()
+  const isDesktop = useIsDesktop()
+
+  // Only enable the scroll-jack parallax on desktop; mobile gets a plain layout
+  const enableParallax = isDesktop && !reduce
 
   const { scrollYProgress } = useScroll({
     target: wrapRef,
@@ -19,9 +41,23 @@ export default function Hero() {
   const cardsY = useTransform(scrollYProgress, [0, 1], ['0%', '-83.5%'])
 
   return (
-    <section id="home" ref={wrapRef} className="relative w-full bg-brand-neutral" style={{ height: reduce ? 'auto' : '320vh' }}>
-      <div className="sticky top-[120px] flex h-[calc(100vh-120px)] w-full items-center overflow-hidden">
-        <Container className="relative z-10">
+    <section
+      id="home"
+      ref={wrapRef}
+      className="relative w-full bg-brand-neutral"
+      style={{ height: enableParallax ? '320vh' : 'auto' }}
+    >
+      <div
+        className={
+          enableParallax
+            // Desktop: sticky scroll-jack section, offset below the fixed navbar
+            ? 'sticky top-[120px] flex h-[calc(100dvh-120px)] w-full items-center overflow-hidden'
+            // Mobile / tablet: normal flow, padded below the navbar (adjust pt value
+            // to match your mobile navbar's actual height)
+            : 'flex w-full items-center overflow-hidden pb-16 pt-[96px] sm:pt-[104px]'
+        }
+      >
+        <Container className="relative z-10 w-full">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
             {/* Left copy */}
             <div className="lg:col-span-7">
@@ -67,18 +103,37 @@ export default function Hero() {
                 <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-white to-transparent" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-white to-transparent" />
 
-                <motion.div style={reduce ? undefined : { y: cardsY }} className="flex flex-col divide-y divide-brand-primary/10 will-change-transform">
-                  {SERVICES.map((s) => (
-                    <Link key={s.slug} href={s.href} className="block p-6 transition-colors hover:bg-brand-neutral">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <div className="font-numeric text-[11px] font-medium uppercase tracking-[0.22em] text-brand-primary/55">{s.num}</div>
-                        <div className="text-[11px] font-medium text-brand-accent">{s.highlight}</div>
-                      </div>
-                      <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-secondary">{s.title}</h3>
-                      <p className="mt-2 text-[13.5px] leading-[1.6] text-brand-secondary/65">{s.tagline}</p>
-                    </Link>
-                  ))}
-                </motion.div>
+                {enableParallax ? (
+                  <motion.div
+                    style={{ y: cardsY }}
+                    className="flex flex-col divide-y divide-brand-primary/10 will-change-transform"
+                  >
+                    {SERVICES.map((s) => (
+                      <Link key={s.slug} href={s.href} className="block p-6 transition-colors hover:bg-brand-neutral">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <div className="font-numeric text-[11px] font-medium uppercase tracking-[0.22em] text-brand-primary/55">{s.num}</div>
+                          <div className="text-[11px] font-medium text-brand-accent">{s.highlight}</div>
+                        </div>
+                        <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-secondary">{s.title}</h3>
+                        <p className="mt-2 text-[13.5px] leading-[1.6] text-brand-secondary/65">{s.tagline}</p>
+                      </Link>
+                    ))}
+                  </motion.div>
+                ) : (
+                  
+                  <div className="flex h-full flex-col divide-y divide-brand-primary/10 overflow-y-auto">
+                    {SERVICES.map((s) => (
+                      <Link key={s.slug} href={s.href} className="block p-6 transition-colors hover:bg-brand-neutral">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <div className="font-numeric text-[11px] font-medium uppercase tracking-[0.22em] text-brand-primary/55">{s.num}</div>
+                          <div className="text-[11px] font-medium text-brand-accent">{s.highlight}</div>
+                        </div>
+                        <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-secondary">{s.title}</h3>
+                        <p className="mt-2 text-[13.5px] leading-[1.6] text-brand-secondary/65">{s.tagline}</p>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="mt-3 text-center text-[11px] font-medium uppercase tracking-[0.22em] text-brand-primary/55">
                 Scroll to explore all six services
@@ -90,3 +145,4 @@ export default function Hero() {
     </section>
   )
 }
+
