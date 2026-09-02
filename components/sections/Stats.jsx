@@ -6,7 +6,9 @@ import Container from '@/components/shared/Container'
 
 function Counter({ target, suffix = '', prefix = '', duration = 2 }) {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
+  // const inView = useInView(ref, { once: true, margin: '-80px' }) 
+  // below line - added because stack was not running- 2 items from 4 
+  const inView = useInView(ref, { once: true, margin: '-20px' })
   const mv = useMotionValue(0)
   const rounded = useTransform(mv, (v) => `${prefix}${Math.round(v).toLocaleString('en-IN')}${suffix}`)
   useEffect(() => {
