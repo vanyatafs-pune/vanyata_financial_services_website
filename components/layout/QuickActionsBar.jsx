@@ -12,6 +12,8 @@ export default function QuickActionsBar() {
   const pathname = usePathname()
   const isActive = (href) => pathname === href
 
+  if (pathname?.startsWith('/studio')) return null
+
   return (
     <div className="sticky top-[72px] z-30 border-b border-brand-primary/10 bg-white">
       <div className="mx-auto flex h-12 max-w-[1320px] items-center justify-end gap-2 px-5 sm:px-6 lg:px-10">
