@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import Container from '@/components/shared/Container'
 import { COMPANY, FOOTER_QUICK_LINKS } from '@/data/company'
 import { SERVICES } from '@/data/services'
@@ -7,6 +8,7 @@ import { IconWhatsApp, IconX, IconLinkedIn, IconYouTube } from '@/components/sha
 import Image from 'next/image'
 
 export default function Footer() {
+  const pathname = usePathname()
   const year = new Date().getFullYear()
   const SOCIALS = [
     { icon: IconLinkedIn, href: COMPANY.social.linkedin, label: 'LinkedIn' },
@@ -14,6 +16,8 @@ export default function Footer() {
     { icon: IconYouTube, href: COMPANY.social.youtube, label: 'YouTube' },
     { icon: IconWhatsApp, href: COMPANY.social.whatsapp, label: 'WhatsApp' },
   ]
+
+  if (pathname?.startsWith('/studio')) return null
 
   return (
     <footer className="bg-brand-ink text-white">
@@ -117,7 +121,7 @@ export default function Footer() {
             <span className="hidden text-white/25 sm:inline">|</span>
             <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
             <span className="text-white/25">|</span>
-            <Link href="/terms" className="hover:text-white">Terms &amp; Conditions</Link>
+            <Link href="/terms-and-conditions" className="hover:text-white">Terms &amp; Conditions</Link>
           </div>
           <div>
             Website Designed &amp; Developed by{' '}

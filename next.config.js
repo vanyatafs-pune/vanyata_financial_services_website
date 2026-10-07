@@ -6,6 +6,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'avatars.githubusercontent.com', pathname: '/**' },
       { protocol: 'https', hostname: 'i.pravatar.cc', pathname: '/**' },
       { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
+      { protocol: 'https', hostname: 'cdn.sanity.io', pathname: '/**' },
     ],
   },
   serverExternalPackages: ['mongodb'],

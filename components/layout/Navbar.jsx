@@ -32,6 +32,9 @@ export default function Navbar() {
 
   const isActive = (href) => (href === '/' ? pathname === '/' : pathname?.startsWith(href))
 
+  // The embedded Sanity Studio is a full-screen app; hide the site chrome there.
+  if (pathname?.startsWith('/studio')) return null
+
   return (
     <>
       <header

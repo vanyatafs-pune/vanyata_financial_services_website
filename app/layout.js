@@ -4,6 +4,7 @@ import { Providers } from './providers'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import QuickActionsBar from '@/components/layout/QuickActionsBar'
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import { ORGANIZATION_SCHEMA, LOCAL_BUSINESS_SCHEMA } from '@/data/schemas'
 import { COMPANY } from '@/data/company'
 
@@ -42,12 +43,24 @@ export const metadata = {
     siteName: 'Vanyata Financial Services',
     type: 'website',
     locale: 'en_IN',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1536,
+        height: 1024,
+        alt: 'Vanyata Financial Services',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Loan Consultant in Pune | Vanyata Financial Services',
     description:
       'Independent financial advisors in Pune. We help you find the right business loan, home loan, or LAP without the bank bias.',
+    images: ['/logo.png'],
+  },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
   },
   robots: { index: true, follow: true },
 }
@@ -61,6 +74,7 @@ export default function RootLayout({ children }) {
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(LOCAL_BUSINESS_SCHEMA) }} />
       </head>
       <body className="bg-white">
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         <Providers>
           <Navbar />
           <QuickActionsBar />

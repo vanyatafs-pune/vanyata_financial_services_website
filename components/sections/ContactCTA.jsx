@@ -18,13 +18,34 @@ const LOAN_OPTIONS = [
 ]
 
 export default function ContactCTA({ heading, subheading }) {
-  const [state, setState] = useState({ name: '', phone: '', service: 'Business Loan', requirement: '' })
+  const [state, setState] = useState({ name: '', phone: '', service: LOAN_OPTIONS[0], requirement: '', website: '' })
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    setSent(true)
-    setTimeout(() => setSent(false), 3500)
+    if (loading || sent) return
+    setError('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data?.error || 'Something went wrong. Please try again.')
+      }
+      setState({ name: '', phone: '', service: LOAN_OPTIONS[0], requirement: '', website: '' })
+      setSent(true)
+      setTimeout(() => setSent(false), 6000)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -124,13 +145,28 @@ export default function ContactCTA({ heading, subheading }) {
                       className="mt-2 w-full resize-none border-b border-brand-primary/15 bg-transparent py-3 text-[15px] text-brand-secondary outline-none placeholder:text-brand-secondary/35 focus:border-brand-primary"
                     />
                   </div>
+                  {/* Honeypot: hidden from users; bots that fill it are ignored. */}
+                  <input
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    value={state.website}
+                    onChange={(e) => setState({ ...state, website: e.target.value })}
+                    className="absolute left-[-9999px] h-0 w-0 opacity-0"
+                  />
                   <button
                     type="submit"
-                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand-primary px-6 py-4 text-sm font-medium text-white transition-colors hover:bg-brand-secondary"
+                    disabled={loading || sent}
+                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand-primary px-6 py-4 text-sm font-medium text-white transition-colors hover:bg-brand-secondary disabled:cursor-not-allowed disabled:opacity-80"
                   >
-                    {sent ? 'Thank you, we’ll call you shortly.' : 'Submit Enquiry'}
-                    {!sent && <ArrowRight className="h-4 w-4" />}
+                    {sent ? 'Thank you, we’ll call you shortly.' : loading ? 'Sending…' : 'Submit Enquiry'}
+                    {!sent && !loading && <ArrowRight className="h-4 w-4" />}
                   </button>
+                  {error ? (
+                    <p role="alert" className="text-center text-[13px] text-red-600">{error}</p>
+                  ) : null}
                   <div className="flex flex-col items-center gap-1 pt-2 text-center text-[12.5px] text-brand-secondary/70 sm:flex-row sm:justify-center sm:gap-4">
                     <span>Or call us directly at</span>
                     <a href={`tel:${COMPANY.phones[0].tel}`} className="font-semibold text-brand-primary">
