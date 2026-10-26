@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
 import {
   calculateEmi,
@@ -18,16 +18,75 @@ const BRAND = {
 
 function Slider({ label, value, min, max, step, onChange, format }) {
   const percent = ((value - min) / (max - min)) * 100
+  const [inputValue, setInputValue] = useState(String(value))
+
+  // Keep the input synchronized when the slider or parent value changes.
+  useEffect(() => {
+    setInputValue(String(value))
+  }, [value])
+
+  // Update the calculator while the entered value is within range.
+  const handleInputChange = (e) => {
+    const rawValue = e.target.value
+    setInputValue(rawValue)
+
+    if (rawValue.trim() === '') return
+
+    const numericValue = Number(rawValue)
+
+    if (
+      Number.isFinite(numericValue) &&
+      numericValue >= min &&
+      numericValue <= max
+    ) {
+      onChange(numericValue)
+    }
+  }
+
+  // Validate and align the final value with the configured step.
+  const handleInputBlur = () => {
+    const parsedValue = Number(inputValue)
+
+    const validValue =
+      inputValue.trim() !== '' && Number.isFinite(parsedValue)
+        ? Math.min(max, Math.max(min, parsedValue))
+        : value
+
+    const steppedValue =
+      min +
+      Math.round((validValue - min) / step) * step
+
+    const finalValue = Number(
+      Math.min(max, Math.max(min, steppedValue)).toFixed(8)
+    )
+
+    onChange(finalValue)
+    setInputValue(String(finalValue))
+  }
+
   return (
     <div>
-      <div className="flex items-baseline justify-between">
+      <div className="flex items-baseline justify-between gap-3">
         <label className="text-[11px] font-medium uppercase tracking-[0.2em] text-brand-primary/70">
           {label}
         </label>
-        <span className="font-numeric text-[18px] font-semibold tracking-tight text-brand-secondary">
-          {format(value)}
-        </span>
+
+        <input
+          type="number"
+          min={min}
+          max={max}
+          step={step}
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur()
+          }}
+          aria-label={`${label} value`}
+          className="w-32 max-w-[55%] rounded border border-brand-primary/15 bg-white px-2 py-1 text-right font-numeric text-[18px] font-semibold tracking-tight text-brand-secondary focus:border-brand-primary focus:outline-none"
+        />
       </div>
+
       <input
         type="range"
         min={min}
@@ -42,6 +101,7 @@ function Slider({ label, value, min, max, step, onChange, format }) {
           borderRadius: 2,
         }}
       />
+
       <div className="mt-2 flex justify-between font-numeric text-[11px] text-brand-secondary/50">
         <span>{format(min)}</span>
         <span>{format(max)}</span>
@@ -49,6 +109,7 @@ function Slider({ label, value, min, max, step, onChange, format }) {
     </div>
   )
 }
+
 
 /**
  * Reusable EMI calculator.
