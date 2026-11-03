@@ -8,6 +8,8 @@ import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
 import { ORGANIZATION_SCHEMA, LOCAL_BUSINESS_SCHEMA } from '@/data/schemas'
 import { COMPANY } from '@/data/company'
 
+import { GoogleTagManager } from '@next/third-parties/google'
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -68,6 +70,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <GoogleTagManager gtmId="GTM-WCCH23NV" />
       <head>
         <script dangerouslySetInnerHTML={{__html:'window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);'}} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_SCHEMA) }} />
